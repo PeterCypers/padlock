@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lock Combination Generator</title>
+    <link rel="shortcut icon" href="imgs/lock.png" type="image/x-icon">
+    <style>
+        body{
+            /* background-image: url(imgs/lock\ background\ 01.jpg); */
+            /* background-image: url(imgs/lock\ background\ 02.jpg); */
+            /* background-image: url(imgs/lock\ background\ 03.jpg); */
+            /* background-image: url(imgs/lock\ background\ 04.webp); */
+            /* background-image: url(imgs/lock\ background\ 05.jpg); */
+            background-image: url(imgs/lock\ background\ 06.jpg);
+            /* background-image: url(imgs/lock\ background\ 07.webp); */
+            background-size: cover;
+        }
+        #grid-container{
+            width: 825px;
+            min-width: 825px;
+            background-color: teal;
+            display: grid;
+            grid-template-columns: 2fr 150px;
+            grid-template-rows: auto;
+            box-shadow: 5px 5px 5px rgb(210, 12, 157);
+        }
+        #grid-container:first-child>div>div,
+        #grid-container:first-child>div>div>div{
+            border: unset;
+        }
+        div{
+            padding: 5px;
+            border: 1.5px solid black;
+        }
+        #first-row>div,
+        #second-row>div,
+        #third-row>div,
+        #fourth-row>div{
+            /* background-color: #fff; */
+            grid-template-columns: 1fr;
+            grid-template-rows: 35% 65%;
+            border: unset;
+        }
+        #first-row>div>div,
+        #second-row>div>div,
+        #third-row>div>div,
+        #fourth-row>div>div{
+            border: unset;
+        }
+        .lock{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            border: unset;
+        }
+        .lock + div{
+            border: unset;
+        }
+        .lock div{
+            width: 2px;
+            border: 1.5px solid white;
+        }
+        .lock div:nth-child(odd){
+            align-self: center;
+            justify-self: right;
+            margin-right: 10px;
+        }
+        .lock div:nth-child(even){
+            align-self: center;
+            justify-self: left;
+            margin-right: 10px;
+        }
+        .red{
+            animation-name: red-cycle;
+            animation-duration: 0.5s;
+            animation-iteration-count: 5;
+        }
+        .green{
+            animation-name: green-cycle;
+            animation-duration: 0.5s;
+            animation-iteration-count: 5;
+        }
+
+        @keyframes red-cycle {
+            0%{background-color: red;}
+            50%{background-color: lime;}
+            100%{background-color: red;}
+        }
+        @keyframes green-cycle {
+            0%{background-color: lime;}
+            50%{background-color: red;}
+            100%{background-color: lime;}
+        }
+        #generateBtn{
+            border: 0;
+            /* line-height: 2.5; */
+            padding: 0 6px;
+            /* font-size: 1.5rem; */
+            /* text-align: center; */
+            /* color: #fff; */
+            text-shadow: 1px 1px 1px #000;
+            /* border-radius: 10px; */
+            background-color: rgb(143, 59, 227);
+            height: 30px;
+            background-image: linear-gradient(to top left,
+                                            rgba(0, 0, 0, .2),
+                                            rgba(0, 0, 0, .2) 30%,
+                                            rgba(0, 0, 0, 0));
+            box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+                        inset -2px -2px 3px rgba(0, 0, 0, .6);
+}
+        #generateBtn:hover {
+            background-color: rgb(188, 42, 232);
+        }
+        #generateBtn:active {
+            box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+                        inset 2px 2px 3px rgba(0, 0, 0, .6);
+        }
+        .lockContainer{
+            background-color: unset;
+        }
+        /* checking something out for Giovanni, animate elements in different locations on hover */
+        /* #grid-container:hover > :nth-child(2),
+        #grid-container:hover > :nth-child(5){
+            background-color: black;
+        } */
+    </style>
+    <script>
+        /* note: background color of green: lime; backgroundcolor of red: red.
+            initially all lockbtn class will be black, loop through the class and generate random nr 0-1
+            they all get a color based on the outcome, add a new class to the element animate_green
+            or animate_red -> this will run through keyframes cycling between green <-> red 20x
+            before ending up on green or red
+        */
+        function init(){
+            const generator = document.getElementById("generateBtn");
+
+            function initialize_lockBackgrounds() {
+                let lockContainers = document.getElementsByClassName("lockContainer");
+                for (let i = 0; i < lockContainers.length; i++) {
+                    lockContainers[i].onclick = () => {
+                        console.log(lockContainers[i].style.backgroundColor);
+                        if(!lockContainers[i].style.backgroundColor){
+                            console.log("in if condition");
+                            lockContainers[i].style.backgroundColor = "mediumvioletred";
+                        }
+                        else if(lockContainers[i].style.backgroundColor){
+                            lockContainers[i].style.backgroundColor = "";
+                        }
+                    }
+                }
+            }
+            initialize_lockBackgrounds();
+
+            generator.onclick = () => {
+                let locknodes = document.getElementsByClassName("lockbtn");
+                for (let i = 0; i < locknodes.length; i++) {
+                    locknodes[i].classList.remove("red","green");
+                    let randomNrZeroOrOne = Math.round(Math.random());
+                    if(randomNrZeroOrOne === 1) locknodes[i].style.backgroundColor = "red";
+                    else locknodes[i].style.backgroundColor = "lime";
+                    if(document.getElementById("animateCheck").checked){
+                        if(randomNrZeroOrOne === 1){
+                            locknodes[i].classList.add("red");
+                        }
+                        if(randomNrZeroOrOne === 0){
+                            locknodes[i].classList.add("green");
+                        }
+                    }
+                }
+            }
+        }
+        window.onload = init;
+    </script>
+</head>
+<body>
+    <div id="grid-container" style="margin: auto; max-width: 90%; margin-top: 25px;margin-bottom: 30px; background-image: none;">
+        <div style="display: flex; justify-content: space-between;">
+            <div>
+                <h1 style="text-decoration: underline;">Random Generate Lock Combinations</h1>
+                <div style="display: inline-block; background-color: red;"></div><p style="display: inline-block;margin-left: 10px; margin-bottom: 0px;">: Down</p><br>
+                <div style="display: inline-block; background-color: lime;"></div><p style="display: inline-block;margin-left: 10px;">: Up</p>
+            </div>
+            <div>
+                <div style="height: 60%;"></div>
+                <label for="animateCheck">Animate</label>
+                <input type="checkbox" name="animateCheck" id="animateCheck">
+                <button id="generateBtn" style="margin-top: 5px;">Generate Codes</button>
+            </div>
+
+        </div>
+        <div style="max-width: 150px;" id="the_actual_lock">
+            <img src="imgs/WhatsApp Image 2023-05-16 at 09.00.39.jpeg" alt="" style="width: 100%;">
+        </div>
+        <div style="display: flex;" id="first-row">
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+        </div>
+        <div style="display: flex;" id="second-row">
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+        </div>
+        <div style="display: flex;" id="third-row">
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+            <div style="width: 150px; height: 150px; background-image: url(imgs/lock.png); background-size: cover;
+            display: grid;" class="lockContainer">
+                <div></div>
+                <div class="lock">
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                    <div class="lockbtn"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+        </div>
+    </div>
+</body>
+</html>
